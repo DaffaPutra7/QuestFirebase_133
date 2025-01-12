@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -17,8 +21,50 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.pam_pertemuan12.ui.viewmodel.FormErrorState
+import com.example.pam_pertemuan12.ui.viewmodel.FormState
+import com.example.pam_pertemuan12.ui.viewmodel.HomeUiState
+import com.example.pam_pertemuan12.ui.viewmodel.InsertUiState
 import com.example.pam_pertemuan12.ui.viewmodel.MahasiswaEvent
 import com.google.protobuf.Value
+
+@Composable
+fun InsertBodyMhs(
+    modifier: Modifier = Modifier,
+    onValueChange: (MahasiswaEvent) -> Unit,
+    uiState: InsertUiState,
+    onClick: () -> Unit,
+    homeUiState: FormState
+){
+  Column(
+      modifier = modifier.fillMaxWidth(),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally
+  ) {
+      FormMahasiswa(
+          mahasiswaEvent = uiState.insertUiEvent,
+          onValueChange = onValueChange,
+          errorState = uiState.isEntryValid,
+          modifier = Modifier.fillMaxWidth()
+      )
+      Button(
+          onClick = onClick,
+          modifier = Modifier.fillMaxWidth(),
+          enabled = homeUiState !is FormState.Loading,
+      ) {
+          if (homeUiState is FormState.Loading) {
+              CircularProgressIndicator(
+                  color = Color.White,
+                  modifier = Modifier
+                      .size(20.dp)
+                      .padding(end = 8.dp)
+              )
+              Text("Loading...")
+          }else {
+              Text("Add")
+          }
+      }
+  }
+}
 
 @Composable
 fun FormMahasiswa(
