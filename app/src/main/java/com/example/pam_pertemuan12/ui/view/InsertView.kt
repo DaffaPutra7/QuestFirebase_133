@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +22,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -27,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,6 +58,7 @@ fun InsertView(
     val uiEvent = viewModel.uiEvent // State untuk form dan validasi
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     // Observasi perubahan state untuk snackbar dan navigasi
     LaunchedEffect(uiState) {
@@ -83,7 +88,7 @@ fun InsertView(
     }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
@@ -92,7 +97,8 @@ fun InsertView(
                     Button(onClick = onBack) {
                         Text("Back")
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior
             )
         }
     ) { padding ->
@@ -101,6 +107,7 @@ fun InsertView(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             InsertBodyMhs(
                 uiState = uiEvent,
@@ -281,6 +288,51 @@ fun FormMahasiswa(
         )
         Text(
             text = errorState.angkatan ?: "",
+            color = Color.Red
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = mahasiswaEvent.judulSkripsi,
+            onValueChange = {
+                onValueChange(mahasiswaEvent.copy(judulSkripsi = it))
+            },
+            label = { Text("Judul Skripsi") },
+            isError = errorState.judulSkripsi != null,
+            placeholder = { Text("Masukkan Nama Judul Skripsi") },
+        )
+        Text(
+            text = errorState.judulSkripsi ?: "",
+            color = Color.Red
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = mahasiswaEvent.dospem1,
+            onValueChange = {
+                onValueChange(mahasiswaEvent.copy(dospem1 = it))
+            },
+            label = { Text("Dosen Pembimbing 1") },
+            isError = errorState.dospem1 != null,
+            placeholder = { Text("Masukkan Nama Dosen Pembimbing 1") },
+        )
+        Text(
+            text = errorState.dospem1 ?: "",
+            color = Color.Red
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = mahasiswaEvent.dospem2,
+            onValueChange = {
+                onValueChange(mahasiswaEvent.copy(dospem2 = it))
+            },
+            label = { Text("Nama Dosen Pembimbing 2") },
+            isError = errorState.dospem2 != null,
+            placeholder = { Text("Masukkan Nama Dosen Pembimbing 2") },
+        )
+        Text(
+            text = errorState.dospem2 ?: "",
             color = Color.Red
         )
     }

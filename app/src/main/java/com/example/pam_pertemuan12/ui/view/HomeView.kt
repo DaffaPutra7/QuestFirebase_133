@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -204,10 +205,10 @@ fun CardMhs(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = Icons.Filled.Person, contentDescription = "")
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
                 Spacer(modifier = Modifier.padding(4.dp))
                 Text(
-                    text = mhs.nama,
+                    text = mhs.judulSkripsi,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
@@ -216,7 +217,7 @@ fun CardMhs(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(imageVector = Icons.Filled.DateRange, contentDescription = "")
+                Icon(imageVector = Icons.Filled.Person, contentDescription = "")
                 Spacer(modifier = Modifier.padding(4.dp))
                 Text(
                     text = mhs.nim,
@@ -227,8 +228,19 @@ fun CardMhs(
                 IconButton(
                     onClick = { onDeleteClick(mhs) }
                 ) {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "Hapus Mahasiswa")
+                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "Hapus Data Skripsi")
                 }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.DateRange, contentDescription = "")
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    text = mhs.nama,
+                    fontWeight = FontWeight.Bold,
+                )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),

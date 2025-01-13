@@ -10,6 +10,7 @@ object PenyediaViewModel {
     val Factory = viewModelFactory {
         initializer { HomeViewModel(MahasiswaApp().containerApp.repositoryMhs) }
         initializer { InsertViewModel(MahasiswaApp().containerApp.repositoryMhs) }
+        initializer { DetailViewModel(MahasiswaApp().containerApp.repositoryMhs) }
     }
 }
 
