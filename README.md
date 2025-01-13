@@ -8,3 +8,8 @@ Halaman Insert
 
 Data di Firebase
 ![Screenshot 2025-01-12 205044](https://github.com/user-attachments/assets/5a83de9c-8711-4d21-9ad4-4dd304340b79)
+
+Tambahan UCP PAM
+![Screenshot 2025-01-13 170237](https://github.com/user-attachments/assets/0dd2243a-a51e-4652-9bc6-cb9c8bb56783)
+![Screenshot 2025-01-13 170343](https://github.com/user-attachments/assets/620149a3-a52e-4652-aeae-40d28a5c142d)
+![Screenshot 2025-01-13 170352](https://github.com/user-attachments/assets/0a289c00-d040-473d-b088-5fc0473bdc44)
