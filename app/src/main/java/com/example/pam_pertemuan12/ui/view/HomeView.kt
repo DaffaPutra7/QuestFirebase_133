@@ -2,6 +2,7 @@ package com.example.pam_pertemuan12.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -58,11 +59,24 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold (
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf<Mahasiswa?>(null) }
 
-        },
+    deleteConfirmationRequired?.let { mahasiswa ->
+        DeleteConfirmationDialog(
+            onDeleteConfirm = {
+                viewModel.deleteMhs(mahasiswa)
+                deleteConfirmationRequired = null
+                viewModel.getMhs() // Refresh data setelah penghapusan
+            },
+            onDeleteCancel = {
+                deleteConfirmationRequired = null
+            }
+        )
+    }
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = navigateToltemEntry,
@@ -75,78 +89,71 @@ fun HomeScreen(
     ) { innerPadding ->
         HomeStatus(
             homeUiState = viewModel.mhsUiState,
-            retryAction = {viewModel.getMhs()},modifier = Modifier.padding(innerPadding),
+            retryAction = { viewModel.getMhs() },
+            modifier = Modifier.padding(innerPadding),
             onDetailClick = onDetailClick,
-            onDeleteClick = {
-                viewModel.deleteMhs(it)
-                viewModel.getMhs()
+            onDeleteClick = { mahasiswa ->
+                deleteConfirmationRequired = mahasiswa
             }
         )
     }
 }
 
-
 @Composable
-fun HomeStatus (
+fun HomeStatus(
     homeUiState: HomeUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     onDetailClick: (String) -> Unit = {},
     onDeleteClick: (Mahasiswa) -> Unit = {}
 ) {
-    var deleteConfirmationRequired by rememberSaveable { mutableStateOf<Mahasiswa?>(null) }
     when (homeUiState) {
         is HomeUiState.Loading -> OnLoading(modifier = modifier.fillMaxSize())
         is HomeUiState.Success -> {
-            ListMahasiswa(
-                listMhs = homeUiState.data,
-                onClick = { onDetailClick(it) },
-                onDeleteClick = { onDeleteClick(it) }
-            )
-            deleteConfirmationRequired?.let { data ->
-                DeleteConfirmationDialog(
-                    onDeleteConfirm = {
-                        onDeleteClick(data)
-                        deleteConfirmationRequired = null
-                    },
-                    onDeleteCancel = {
-                        deleteConfirmationRequired = null
-                    })
+            if (homeUiState.data.isEmpty()) {
+                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "Tidak ada data Mahasiswa")
+                }
+            } else {
+                ListMahasiswa(
+                    listMhs = homeUiState.data,
+                    onClick = { onDetailClick(it) },
+                    onDeleteClick = { onDeleteClick(it) }
+                )
             }
         }
         is HomeUiState.Error -> OnError(
-            message = homeUiState.e.localizedMessage?: "error",
+            message = homeUiState.e.localizedMessage ?: "Terjadi kesalahan",
             retryAction = retryAction,
             modifier = modifier.fillMaxWidth()
         )
     }
 }
 
-
 @Composable
 fun OnLoading(modifier: Modifier = Modifier) {
-    Image (
+    Image(
         modifier = modifier.size(200.dp),
         painter = painterResource(R.drawable.loading),
-        contentDescription = ""
+        contentDescription = "Loading"
     )
 }
 
 @Composable
 fun OnError(
-    retryAction:() -> Unit,
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     message: String
 ) {
-    Column (
+    Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_connection_error), contentDescription = ""
+            painter = painterResource(id = R.drawable.ic_connection_error), contentDescription = "Error"
         )
-        Text(text = stringResource(R.string.loading_failed), modifier.padding(16.dp))
+        Text(text = message, modifier.padding(16.dp))
         Button(onClick = retryAction) {
             Text("Coba Lagi")
         }
@@ -157,8 +164,8 @@ fun OnError(
 fun ListMahasiswa(
     listMhs: List<Mahasiswa>,
     modifier: Modifier = Modifier,
-    onClick: (String) -> Unit = { },
-    onDeleteClick: (Mahasiswa) -> Unit = {}
+    onClick: (String) -> Unit = {},
+    onDeleteClick: (Mahasiswa) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -181,8 +188,8 @@ fun ListMahasiswa(
 fun CardMhs(
     mhs: Mahasiswa,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = { },
-    onDeleteClick: (String) -> Unit = {}
+    onClick: () -> Unit = {},
+    onDeleteClick: (Mahasiswa) -> Unit = {}
 ) {
     Card(
         onClick = onClick,
@@ -218,9 +225,9 @@ fun CardMhs(
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
                 IconButton(
-                    onClick = { onDeleteClick(mhs.nim) }
+                    onClick = { onDeleteClick(mhs) }
                 ) {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
+                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "Hapus Mahasiswa")
                 }
             }
             Row(
@@ -246,17 +253,17 @@ private fun DeleteConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = { /* Do nothing */ },
-        title = { Text("Delete Data Mahasiswa") },
-        text = { Text("Apakah anda yakin ingin menghapus data?") },
+        title = { Text("Hapus Data Mahasiswa") },
+        text = { Text("Apakah Anda yakin ingin menghapus data ini?") },
         modifier = modifier,
         dismissButton = {
             TextButton(onClick = onDeleteCancel) {
-                Text(text = "Cancel")
+                Text(text = "Batal")
             }
         },
         confirmButton = {
             TextButton(onClick = onDeleteConfirm) {
-                Text(text = "Yes")
+                Text(text = "Hapus")
             }
         }
     )
